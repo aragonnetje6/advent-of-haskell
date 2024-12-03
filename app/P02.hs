@@ -39,8 +39,8 @@ part2 input = show $ length $ filter dampenedSafe $ unwrap (parse file "" input)
 dampenedSafe :: [Integer] -> Bool
 dampenedSafe xs = any isSafe $ dampenedOptions xs
 
-dampenedOptions :: [Integer] -> [[Integer]]
+dampenedOptions :: [a0] -> [[a0]]
 dampenedOptions xs = map (eliminateIndex xs) [0..length xs]
 
-eliminateIndex :: [Integer] -> Int -> [Integer]
+eliminateIndex :: [a0] -> Int -> [a0]
 eliminateIndex xs i = take i xs ++ drop (i+1) xs
