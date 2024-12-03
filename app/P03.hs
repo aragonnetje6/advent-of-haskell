@@ -1,0 +1,41 @@
+module P03 (part1, part2) where
+import Text.Parsec (parse, Parsec, string, char, many1, digit, anyChar, manyTill, try, endBy, lookAhead, (<|>), eof, (<?>))
+import Data.Functor (($>))
+import Data.Either (fromRight)
+
+data Instruction = Mul Integer Integer | Do | Dont
+
+instance Show Instruction where
+  show (Mul x y) = show (x, y)
+  show Do = "Do"
+  show Dont = "Dont"
+
+part1 :: String -> String
+part1 input = show $ sum $ map (uncurry (*)) $ fromRight [] $ parse muls "" input
+
+muls :: Parsec String () [(Integer, Integer)]
+muls = manyTill anyChar (lookAhead $ try  mul) *> endBy mul (manyTill anyChar ((eof <?> "end of input") <|> (lookAhead (try mul) $> ())))
+
+mul :: Parsec String () (Integer, Integer)
+mul = (,) <$> (string "mul(" *> integer) <*> (char ',' *> integer) <* char ')'
+
+integer :: Parsec String () Integer
+integer = read <$> many1 digit
+
+part2 :: String -> String
+part2 input = show $ sum $ map (uncurry (*)) $ discardDonts $ fromRight [] $ parse instructions "" input
+
+discardDonts :: [Instruction] -> [(Integer, Integer)]
+discardDonts xs = fst $ foldl addIfTrue ([], True) xs
+
+addIfTrue :: ([(Integer, Integer)], Bool) -> Instruction -> ([(Integer, Integer)], Bool)
+addIfTrue (xs, _) Do = (xs, True)
+addIfTrue (xs, _) Dont = (xs, False)
+addIfTrue (xs, True) (Mul x y) = ((x, y):xs, True)
+addIfTrue (xs, False) _ = (xs, False)
+
+instructions :: Parsec String () [Instruction]
+instructions = manyTill anyChar (lookAhead $ try instruction) *> endBy instruction (manyTill anyChar ((eof <?> "end of input") <|> (lookAhead (try instruction) $> ())))
+
+instruction :: Parsec String () Instruction
+instruction = try (Mul <$> (string "mul(" *> integer) <*> (char ',' *> integer) <* char ')') <|> try (Do <$ string "do()") <|> try (Dont <$ string "don't()")
