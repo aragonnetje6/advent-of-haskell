@@ -1,5 +1,6 @@
 module P02 (part1, part2) where
-import Text.Parsec (Parsec, many1, digit, parse, newline, sepBy1, ParseError, char)
+
+import Text.Parsec (ParseError, Parsec, char, digit, many1, newline, parse, sepBy1)
 
 part1 :: String -> String
 part1 input = show $ length $ filter isSafe $ unwrap (parse file "" input)
@@ -8,16 +9,17 @@ isSafe :: [Integer] -> Bool
 isSafe xs = (increasing xs || decreasing xs) && closeEnough xs
 
 increasing :: [Integer] -> Bool
-increasing (x1:x2:xs) = x1 < x2 && increasing (x2:xs)
+increasing (x1 : x2 : xs) = x1 < x2 && increasing (x2 : xs)
 increasing _ = True
 
 decreasing :: [Integer] -> Bool
-decreasing (x1:x2:xs) = x1 > x2 && decreasing (x2:xs)
+decreasing (x1 : x2 : xs) = x1 > x2 && decreasing (x2 : xs)
 decreasing _ = True
 
 closeEnough :: [Integer] -> Bool
-closeEnough (x1:x2:xs) = absDiff > 0 && absDiff < 4 && closeEnough (x2:xs)
-  where absDiff = abs (x1 - x2)
+closeEnough (x1 : x2 : xs) = absDiff > 0 && absDiff < 4 && closeEnough (x2 : xs)
+  where
+    absDiff = abs (x1 - x2)
 closeEnough _ = True
 
 unwrap :: Either ParseError a1 -> a1
@@ -40,7 +42,7 @@ dampenedSafe :: [Integer] -> Bool
 dampenedSafe xs = any isSafe $ dampenedOptions xs
 
 dampenedOptions :: [a0] -> [[a0]]
-dampenedOptions xs = map (eliminateIndex xs) [0..length xs]
+dampenedOptions xs = map (eliminateIndex xs) [0 .. length xs]
 
 eliminateIndex :: [a0] -> Int -> [a0]
-eliminateIndex xs i = take i xs ++ drop (i+1) xs
+eliminateIndex xs i = take i xs ++ drop (i + 1) xs
