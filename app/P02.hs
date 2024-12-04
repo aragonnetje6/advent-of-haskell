@@ -3,7 +3,7 @@ module P02 (part1, part2) where
 import Text.Parsec (ParseError, Parsec, char, digit, many1, newline, parse, sepBy1)
 
 part1 :: String -> String
-part1 input = show $ length $ filter isSafe $ unwrap (parse file "" input)
+part1 = show . length . filter isSafe . unwrap . parse file ""
 
 isSafe :: [Integer] -> Bool
 isSafe xs = (increasing xs || decreasing xs) && closeEnough xs
@@ -36,10 +36,10 @@ file :: Parsec String () [[Integer]]
 file = many1 (report <* newline)
 
 part2 :: String -> String
-part2 input = show $ length $ filter dampenedSafe $ unwrap (parse file "" input)
+part2 = show . length . filter dampenedSafe . unwrap . parse file ""
 
 dampenedSafe :: [Integer] -> Bool
-dampenedSafe xs = any isSafe $ dampenedOptions xs
+dampenedSafe = any isSafe . dampenedOptions
 
 dampenedOptions :: [a0] -> [[a0]]
 dampenedOptions xs = map (eliminateIndex xs) [0 .. length xs]

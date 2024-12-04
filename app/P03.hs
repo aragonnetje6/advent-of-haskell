@@ -12,7 +12,7 @@ instance Show Instruction where
   show Dont = "Dont"
 
 part1 :: String -> String
-part1 input = show $ sum $ map (uncurry (*)) $ fromRight [] $ parse muls "" input
+part1 = show . sum . map (uncurry (*)) . fromRight [] . parse muls ""
 
 muls :: Parsec String () [(Integer, Integer)]
 muls = manyTill anyChar (lookAhead $ try mul) *> endBy mul (manyTill anyChar ((eof <?> "end of input") <|> (lookAhead (try mul) $> ())))
@@ -24,10 +24,10 @@ integer :: Parsec String () Integer
 integer = read <$> many1 digit
 
 part2 :: String -> String
-part2 input = show $ sum $ map (uncurry (*)) $ discardDonts $ fromRight [] $ parse instructions "" input
+part2 = show . sum . map (uncurry (*)) . discardDonts . fromRight [] . parse instructions ""
 
 discardDonts :: [Instruction] -> [(Integer, Integer)]
-discardDonts xs = fst $ foldl addIfTrue ([], True) xs
+discardDonts = fst . foldl addIfTrue ([], True)
 
 addIfTrue :: ([(Integer, Integer)], Bool) -> Instruction -> ([(Integer, Integer)], Bool)
 addIfTrue (xs, _) Do = (xs, True)

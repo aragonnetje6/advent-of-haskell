@@ -5,7 +5,7 @@ import Data.List (sort)
 import Text.Parsec (Parsec, digit, many1, newline, parse, spaces)
 
 part1 :: String -> String
-part1 input = show $ sum $ map (abs . uncurry (-)) (unsplit $ sortBoth $ split $ fromRight [] (parse file "" input))
+part1 = show . sum . map (abs . uncurry (-)) . uncurry zip . sortBoth . unzip . fromRight [] . parse file ""
 
 integer :: Parsec String () Integer
 integer = read <$> many1 digit
@@ -16,17 +16,11 @@ line = (,) <$> integer <*> (spaces *> integer)
 file :: Parsec String () [(Integer, Integer)]
 file = many1 (line <* newline)
 
-split :: [(a1, a2)] -> ([a1], [a2])
-split xs = (map fst xs, map snd xs)
-
 sortBoth :: (Ord a1, Ord a2) => ([a1], [a2]) -> ([a1], [a2])
 sortBoth (xs, ys) = (sort xs, sort ys)
 
-unsplit :: ([a1], [a2]) -> [(a1, a2)]
-unsplit (xs, ys) = zip xs ys
-
 part2 :: String -> String
-part2 input = show $ uncurry similarity $ split $ fromRight [] (parse file "" input)
+part2 = show . uncurry similarity . unzip . fromRight [] . parse file ""
 
 similarity :: [Integer] -> [Integer] -> Integer
 similarity xs ys = sum $ map (\x -> x * toInteger (length $ filter (== x) ys)) xs
