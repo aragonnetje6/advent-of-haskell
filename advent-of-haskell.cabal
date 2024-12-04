@@ -64,6 +64,7 @@ executable advent-of-haskell
     other-modules:  P01
                     P02
                     P03
+                    P04
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:

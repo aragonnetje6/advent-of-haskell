@@ -3,6 +3,7 @@ module Main where
 import qualified P01
 import qualified P02
 import qualified P03
+import qualified P04
 import Text.Printf (printf)
 
 data DayT = Day String Integer (String -> String) (String -> String)
@@ -11,7 +12,8 @@ days :: [DayT]
 days =
   [ Day "./inputs/p01.txt" 1 P01.part1 P01.part2,
     Day "./inputs/p02.txt" 2 P02.part1 P02.part2,
-    Day "./inputs/p03.txt" 2 P03.part1 P03.part2
+    Day "./inputs/p03.txt" 2 P03.part1 P03.part2,
+    Day "./inputs/p04.txt" 2 P04.part1 P04.part2
   ]
 
 main :: IO ()
