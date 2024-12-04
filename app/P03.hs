@@ -4,7 +4,7 @@ import Data.Either (fromRight)
 import Data.Functor (($>))
 import Text.Parsec (Parsec, anyChar, char, digit, endBy, eof, lookAhead, many1, manyTill, parse, string, try, (<?>), (<|>))
 
-data Instruction = Mul Integer Integer | Do | Dont
+data Instruction = Mul Int Int | Do | Dont
 
 instance Show Instruction where
   show (Mul x y) = show (x, y)
@@ -14,22 +14,22 @@ instance Show Instruction where
 part1 :: String -> String
 part1 = show . sum . map (uncurry (*)) . fromRight [] . parse muls ""
 
-muls :: Parsec String () [(Integer, Integer)]
+muls :: Parsec String () [(Int, Int)]
 muls = manyTill anyChar (lookAhead $ try mul) *> endBy mul (manyTill anyChar ((eof <?> "end of input") <|> (lookAhead (try mul) $> ())))
 
-mul :: Parsec String () (Integer, Integer)
+mul :: Parsec String () (Int, Int)
 mul = (,) <$> (string "mul(" *> integer) <*> (char ',' *> integer) <* char ')'
 
-integer :: Parsec String () Integer
+integer :: Parsec String () Int
 integer = read <$> many1 digit
 
 part2 :: String -> String
 part2 = show . sum . map (uncurry (*)) . discardDonts . fromRight [] . parse instructions ""
 
-discardDonts :: [Instruction] -> [(Integer, Integer)]
+discardDonts :: [Instruction] -> [(Int, Int)]
 discardDonts = fst . foldl addIfTrue ([], True)
 
-addIfTrue :: ([(Integer, Integer)], Bool) -> Instruction -> ([(Integer, Integer)], Bool)
+addIfTrue :: ([(Int, Int)], Bool) -> Instruction -> ([(Int, Int)], Bool)
 addIfTrue (xs, _) Do = (xs, True)
 addIfTrue (xs, _) Dont = (xs, False)
 addIfTrue (xs, True) (Mul x y) = ((x, y) : xs, True)
