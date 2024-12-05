@@ -7,9 +7,9 @@ import qualified P04
 import qualified P05
 import Text.Printf (printf)
 
-data DayT = Day String Int (String -> String) (String -> String)
+data Day = Day String Int (String -> String) (String -> String)
 
-days :: [DayT]
+days :: [Day]
 days =
   [ Day "./inputs/p01.txt" 1 P01.part1 P01.part2,
     Day "./inputs/p02.txt" 2 P02.part1 P02.part2,
@@ -21,7 +21,7 @@ days =
 main :: IO ()
 main = mapM_ runDay days
 
-runDay :: DayT -> IO ()
+runDay :: Day -> IO ()
 runDay (Day path day part1 part2) = readFile path >>= printAll day . applyAll [part1, part2]
 
 printAll :: Int -> [String] -> IO ()
