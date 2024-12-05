@@ -20,7 +20,7 @@ sortBoth :: (Ord a1, Ord a2) => ([a1], [a2]) -> ([a1], [a2])
 sortBoth (xs, ys) = (sort xs, sort ys)
 
 part2 :: String -> String
-part2 = show . uncurry similarity . unzip . fromRight [] . parse file ""
+part2 = show . uncurry (flip similarity) . unzip . fromRight [] . parse file ""
 
 similarity :: [Int] -> [Int] -> Int
-similarity xs ys = sum $ map (\x -> x * length (filter (== x) ys)) xs
+similarity ys = sum . map (\x -> x * length (filter (== x) ys))

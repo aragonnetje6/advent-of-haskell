@@ -7,7 +7,12 @@ import qualified P04
 import qualified P05
 import Text.Printf (printf)
 
-data Day = Day String Int (String -> String) (String -> String)
+data Day = Day
+  { inputPath :: String,
+    dayNumber :: Int,
+    part1 :: String -> String,
+    part2 :: String -> String
+  }
 
 days :: [Day]
 days =
@@ -22,13 +27,13 @@ main :: IO ()
 main = mapM_ runDay days
 
 runDay :: Day -> IO ()
-runDay (Day path day part1 part2) = readFile path >>= printAll day . applyAll [part1, part2]
+runDay day = readFile (inputPath day) >>= printAll (dayNumber day) . flip applyAll [part1 day, part2 day]
 
 printAll :: Int -> [String] -> IO ()
-printAll day xs = mapM_ (putStrLn . formatAnswer day) $ zip [1 ..] xs
+printAll day = mapM_ (putStrLn . uncurry (formatAnswer day)) . zip [1 ..]
 
-formatAnswer :: Int -> (Int, String) -> String
-formatAnswer day (part, answer) = printf "Day %d part %d: %s" day part answer
+formatAnswer :: Int -> Int -> String -> String
+formatAnswer = printf "Day %d part %d: %s"
 
-applyAll :: [String -> String] -> String -> [String]
-applyAll fs x = map (\f -> f x) fs
+applyAll :: String -> [String -> String] -> [String]
+applyAll x = map ($ x)
