@@ -6,10 +6,7 @@ import Data.List (elemIndex)
 import Data.Maybe (fromJust, fromMaybe)
 import Text.Parsec (Parsec, char, digit, endBy1, many1, newline, parse, sepBy1)
 
-data RuleT = Rule Int Int
-
-instance Show RuleT where
-  show (Rule x y) = show x ++ "|" ++ show y
+data RuleT = Rule Int Int deriving (Show)
 
 part1 :: String -> String
 part1 = show . sum . map getMiddle . uncurry filterPages . fromRight ([], []) . parse parseFullFile ""

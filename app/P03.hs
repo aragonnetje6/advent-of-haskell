@@ -4,12 +4,7 @@ import Data.Either (fromRight)
 import Data.Functor (($>))
 import Text.Parsec (Parsec, anyChar, char, digit, endBy, eof, lookAhead, many1, manyTill, parse, string, try, (<?>), (<|>))
 
-data Instruction = Mul Int Int | Do | Dont
-
-instance Show Instruction where
-  show (Mul x y) = show (x, y)
-  show Do = "Do"
-  show Dont = "Dont"
+data Instruction = Mul Int Int | Do | Dont deriving (Show)
 
 part1 :: String -> String
 part1 = show . sum . map (uncurry (*)) . fromRight [] . parse muls ""
