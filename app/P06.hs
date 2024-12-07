@@ -46,7 +46,7 @@ getGuard :: [Either Wall Guard] -> ([Wall], Guard)
 getGuard eithers = (lefts eithers, head $ rights eithers)
 
 walkUntilGone :: [Wall] -> Guard -> (Guard, [(Int, Int)])
-walkUntilGone walls guard = until (isNothing . findWall walls . fst) (uncurry (walk walls)) (guard, [])
+walkUntilGone walls = until (isNothing . findWall walls . fst) (uncurry (walk walls)) . (,[])
 
 walk :: [Wall] -> Guard -> [(Int, Int)] -> (Guard, [(Int, Int)])
 walk walls guard walked = (newGuard guard, newWalked guard ++ walked)
@@ -74,10 +74,9 @@ finalWalk walls (Guard gx gy DLeft) = (++ map (,gy) [((+ 1) $ minimum $ map wall
 finalWalk walls (Guard gx gy DRight) = (++ map (,gy) [gx .. maximum $ map wallX walls])
 
 part2 :: String -> String
-part2 input = show $ length $ filter (flip walkUntilLoops guard . (: walls)) $ filter (\wall -> wallX wall /= guardX guard && wallY wall /= guardY guard) path
+part2 input = show $ length $ filter (flip walkUntilLoops guard . (: walls)) $ filter (\wall -> wallX wall /= guardX guard && wallY wall /= guardY guard) (map (uncurry Wall) $ nub $ uncurry (finalWalk walls) $ walkUntilGone walls guard)
   where
     (walls, guard) = unwrap $ parse grid "" input
-    path = map (uncurry Wall) $ nub $ uncurry (finalWalk walls) $ walkUntilGone walls guard
 
 walkUntilLoops :: [Wall] -> Guard -> Bool
 walkUntilLoops walls initialGuard = uncurry elem $ until (\(guard, guards) -> elem guard guards || (isNothing . findWall walls) guard) (uncurry (walkGuards walls)) (initialGuard, [])
