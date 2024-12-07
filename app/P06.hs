@@ -5,8 +5,8 @@ module P06 (part1, part2) where
 
 import Data.Either (lefts, rights)
 import Data.Function (on)
-import Data.List (nub, sortBy)
-import Data.Maybe (catMaybes, fromJust, isNothing, listToMaybe)
+import Data.List (maximumBy, minimumBy, nub)
+import Data.Maybe (catMaybes, fromJust, isNothing)
 import Text.Parsec (Parsec, char, endBy1, getPosition, many1, newline, parse, sourceColumn, sourceLine, (<|>))
 
 part1 :: String -> String
@@ -61,11 +61,15 @@ walk walls guard walked = (newGuard guard, newWalked guard ++ walked)
     newWalked (Guard x y DLeft) = map (,y) [wx + 1 .. x]
     newWalked (Guard x y DRight) = map (,y) [x .. wx - 1]
 
+safe :: ([a] -> a) -> [a] -> Maybe a
+safe _ [] = Nothing
+safe f xs = Just $ f xs
+
 findWall :: [Wall] -> Guard -> Maybe Wall
-findWall walls (Guard gx gy Up) = listToMaybe $ sortBy (compare `on` wallY) $ filter (\(Wall wx wy) -> gx == wx && wy > gy) walls
-findWall walls (Guard gx gy Down) = listToMaybe $ sortBy (flip compare `on` wallY) (filter (\(Wall wx wy) -> gx == wx && wy < gy) walls)
-findWall walls (Guard gx gy DRight) = listToMaybe $ sortBy (compare `on` wallX) $ filter (\(Wall wx wy) -> gy == wy && wx > gx) walls
-findWall walls (Guard gx gy DLeft) = listToMaybe $ sortBy (flip compare `on` wallX) (filter (\(Wall wx wy) -> gy == wy && wx < gx) walls)
+findWall walls (Guard gx gy Up) = safe (minimumBy (compare `on` wallY)) $ filter (\(Wall wx wy) -> gx == wx && wy > gy) walls
+findWall walls (Guard gx gy Down) = safe (maximumBy (compare `on` wallY)) $ filter (\(Wall wx wy) -> gx == wx && wy < gy) walls
+findWall walls (Guard gx gy DRight) = safe (minimumBy (compare `on` wallX)) $ filter (\(Wall wx wy) -> gy == wy && wx > gx) walls
+findWall walls (Guard gx gy DLeft) = safe (maximumBy (compare `on` wallX)) $ filter (\(Wall wx wy) -> gy == wy && wx < gx) walls
 
 finalWalk :: [Wall] -> Guard -> [(Int, Int)] -> [(Int, Int)]
 finalWalk walls (Guard gx gy Up) = (++ map (gx,) [gy .. maximum $ map wallY walls])
