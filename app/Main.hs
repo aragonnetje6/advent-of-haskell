@@ -5,6 +5,7 @@ import qualified P02
 import qualified P03
 import qualified P04
 import qualified P05
+import qualified P06
 import Text.Printf (printf)
 
 data Day = Day
@@ -18,9 +19,10 @@ days :: [Day]
 days =
   [ Day "./inputs/p01.txt" 1 P01.part1 P01.part2,
     Day "./inputs/p02.txt" 2 P02.part1 P02.part2,
-    Day "./inputs/p03.txt" 2 P03.part1 P03.part2,
-    Day "./inputs/p04.txt" 2 P04.part1 P04.part2,
-    Day "./inputs/p05.txt" 2 P05.part1 P05.part2
+    Day "./inputs/p03.txt" 3 P03.part1 P03.part2,
+    Day "./inputs/p04.txt" 4 P04.part1 P04.part2,
+    Day "./inputs/p05.txt" 5 P05.part1 P05.part2,
+    Day "./inputs/p06.txt" 6 P06.part1 P06.part2
   ]
 
 main :: IO ()
