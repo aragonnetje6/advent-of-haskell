@@ -68,6 +68,7 @@ executable advent-of-haskell
                     P05
                     P06
                     P07
+                    P08
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
