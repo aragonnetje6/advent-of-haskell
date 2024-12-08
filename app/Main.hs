@@ -31,7 +31,10 @@ main :: IO ()
 main = mapM_ runDay days
 
 runDay :: Day -> IO ()
-runDay day = readFile (inputPath day) >>= printAll (dayNumber day) . flip applyAll [part1 day, part2 day]
+runDay day =
+  readFile
+    (inputPath day)
+    >>= printAll (dayNumber day) . flip applyAll [part1 day, part2 day]
 
 printAll :: Int -> [String] -> IO ()
 printAll day = mapM_ (putStrLn . uncurry (formatAnswer day)) . zip [1 ..]

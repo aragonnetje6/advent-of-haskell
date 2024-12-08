@@ -15,10 +15,22 @@ countVertical :: [String] -> Int
 countVertical = countHorizontal . transpose
 
 countDiagonal :: [String] -> Int
-countDiagonal = sum . map countString . concatMap getDiagonals . concatMap transpose . windows 4 . map (windows 4)
+countDiagonal =
+  sum
+    . map countString
+    . concatMap getDiagonals
+    . concatMap transpose
+    . windows 4
+    . map (windows 4)
 
 getDiagonals :: [String] -> [String]
-getDiagonals strings = [zipWith (flip (!!)) [0 ..] strings, zipWith (\i xs -> xs !! (length (head strings) - i)) [1 ..] strings]
+getDiagonals strings =
+  [ zipWith
+      (flip (!!))
+      [0 ..]
+      strings,
+    zipWith (\i xs -> xs !! (length (head strings) - i)) [1 ..] strings
+  ]
 
 countString :: String -> Int
 countString = length . filter (\x -> x == "XMAS" || reverse x == "XMAS") . windows 4
@@ -30,7 +42,13 @@ part2 :: String -> String
 part2 = show . masx . lines
 
 masx :: [String] -> Int
-masx = length . filter isMasx . map getDiagonals . concatMap transpose . windows 3 . map (windows 3)
+masx =
+  length
+    . filter isMasx
+    . map getDiagonals
+    . concatMap transpose
+    . windows 3
+    . map (windows 3)
 
 isMasx :: [String] -> Bool
 isMasx (x : y : _) = (x == "MAS" || x == "SAM") && (y == "MAS" || y == "SAM")

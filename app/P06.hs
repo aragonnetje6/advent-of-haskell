@@ -7,7 +7,18 @@ import Data.Either (lefts, rights)
 import Data.Function (on)
 import Data.List (maximumBy, minimumBy, nub)
 import Data.Maybe (catMaybes, fromJust, isNothing)
-import Text.Parsec (Parsec, char, endBy1, getPosition, many1, newline, parse, sourceColumn, sourceLine, (<|>))
+import Text.Parsec
+  ( Parsec,
+    char,
+    endBy1,
+    getPosition,
+    many1,
+    newline,
+    parse,
+    sourceColumn,
+    sourceLine,
+    (<|>),
+  )
 
 part1 :: String -> String
 part1 input = show $ length $ nub $ uncurry (finalWalk walls) $ walkUntilGone walls guard
@@ -36,8 +47,18 @@ data Direction = Up | Down | DLeft | DRight deriving (Show, Eq)
 tile :: Parsec String () (Maybe (Either Wall Guard))
 tile =
   (Nothing <$ char '.')
-    <|> ((\pos -> Just (Prelude.Left (Wall (sourceColumn pos) (sourceLine pos)))) <$> getPosition <* char '#')
-    <|> ((\pos -> Just (Prelude.Right (Guard (sourceColumn pos) (sourceLine pos) Down))) <$> getPosition <* char '^')
+    <|> ( ( \pos ->
+              Just (Prelude.Left (Wall (sourceColumn pos) (sourceLine pos)))
+          )
+            <$> getPosition
+            <* char '#'
+        )
+    <|> ( ( \pos ->
+              Just (Prelude.Right (Guard (sourceColumn pos) (sourceLine pos) Down))
+          )
+            <$> getPosition
+            <* char '^'
+        )
 
 grid :: Parsec String () ([Wall], Guard)
 grid = getGuard . concatMap catMaybes <$> endBy1 (many1 tile) newline
@@ -66,10 +87,22 @@ safe _ [] = Nothing
 safe f xs = Just $ f xs
 
 findWall :: [Wall] -> Guard -> Maybe Wall
-findWall walls (Guard gx gy Up) = safe (minimumBy (compare `on` wallY)) $ filter (\(Wall wx wy) -> gx == wx && wy > gy) walls
-findWall walls (Guard gx gy Down) = safe (maximumBy (compare `on` wallY)) $ filter (\(Wall wx wy) -> gx == wx && wy < gy) walls
-findWall walls (Guard gx gy DRight) = safe (minimumBy (compare `on` wallX)) $ filter (\(Wall wx wy) -> gy == wy && wx > gx) walls
-findWall walls (Guard gx gy DLeft) = safe (maximumBy (compare `on` wallX)) $ filter (\(Wall wx wy) -> gy == wy && wx < gx) walls
+findWall walls (Guard gx gy Up) =
+  safe
+    (minimumBy (compare `on` wallY))
+    $ filter (\(Wall wx wy) -> gx == wx && wy > gy) walls
+findWall walls (Guard gx gy Down) =
+  safe
+    (maximumBy (compare `on` wallY))
+    $ filter (\(Wall wx wy) -> gx == wx && wy < gy) walls
+findWall walls (Guard gx gy DRight) =
+  safe
+    (minimumBy (compare `on` wallX))
+    $ filter (\(Wall wx wy) -> gy == wy && wx > gx) walls
+findWall walls (Guard gx gy DLeft) =
+  safe
+    (maximumBy (compare `on` wallX))
+    $ filter (\(Wall wx wy) -> gy == wy && wx < gx) walls
 
 finalWalk :: [Wall] -> Guard -> [(Int, Int)] -> [(Int, Int)]
 finalWalk walls (Guard gx gy Up) = (++ map (gx,) [gy .. maximum $ map wallY walls])
@@ -78,12 +111,27 @@ finalWalk walls (Guard gx gy DLeft) = (++ map (,gy) [((+ 1) $ minimum $ map wall
 finalWalk walls (Guard gx gy DRight) = (++ map (,gy) [gx .. maximum $ map wallX walls])
 
 part2 :: String -> String
-part2 input = show $ length $ filter (flip walkUntilLoops guard . (: walls)) $ filter (\wall -> wallX wall /= guardX guard && wallY wall /= guardY guard) (map (uncurry Wall) $ nub $ uncurry (finalWalk walls) $ walkUntilGone walls guard)
+part2 input =
+  show
+    $ length
+    $ filter
+      (flip walkUntilLoops guard . (: walls))
+    $ filter
+      (\wall -> wallX wall /= guardX guard && wallY wall /= guardY guard)
+      (map (uncurry Wall) $ nub $ uncurry (finalWalk walls) $ walkUntilGone walls guard)
   where
     (walls, guard) = unwrap $ parse grid "" input
 
 walkUntilLoops :: [Wall] -> Guard -> Bool
-walkUntilLoops walls initialGuard = uncurry elem $ until (\(guard, guards) -> elem guard guards || (isNothing . findWall walls) guard) (uncurry (walkGuards walls)) (initialGuard, [])
+walkUntilLoops walls initialGuard =
+  uncurry elem $
+    until
+      ( \(guard, guards) ->
+          elem guard guards
+            || (isNothing . findWall walls) guard
+      )
+      (uncurry (walkGuards walls))
+      (initialGuard, [])
 
 walkGuards :: [Wall] -> Guard -> [Guard] -> (Guard, [Guard])
 walkGuards walls guard guards = (newGuard guard, guard : guards)

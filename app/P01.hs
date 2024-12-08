@@ -5,7 +5,15 @@ import Data.List (sort)
 import Text.Parsec (Parsec, digit, many1, newline, parse, spaces)
 
 part1 :: String -> String
-part1 = show . sum . map (abs . uncurry (-)) . uncurry zip . sortBoth . unzip . fromRight [] . parse file ""
+part1 =
+  show
+    . sum
+    . map (abs . uncurry (-))
+    . uncurry zip
+    . sortBoth
+    . unzip
+    . fromRight []
+    . parse file ""
 
 integer :: Parsec String () Int
 integer = read <$> many1 digit
